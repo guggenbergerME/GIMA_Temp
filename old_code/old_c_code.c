@@ -23,8 +23,7 @@
 #include <Ethernet.h>
 #include <PubSubClient.h> // mqtt
 #include <SPI.h> // Seriell
-//#include <Wire.h>
-#include <OneWire.h>
+#include <Wire.h>
 #include <DallasTemperature.h>
 
 //************************************************************************** LAN Network definieren 
@@ -39,14 +38,6 @@ EthernetClient ethClient;
 PubSubClient client(ethClient);
 
 //************************************************************************** Variablen
-char stgFromFloat[10];
-char msgToPublish[60];
-char textTOtopic[60];
-
-//************************************************************************** WIRE Bus
-#define ONE_WIRE_BUS 2
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature sensors(&oneWire);
 
 
 //************************************************************************** Temp. Sensor ds18b20 HEX zuweisen
@@ -57,15 +48,7 @@ sw  GND
 ge  4,7 kOhm gegen rt (Pin 2 Uno)
 
 */
-DeviceAddress temp_sensor_1    = { 0x28, 0x61, 0x64, 0x0A, 0xFD, 0x69, 0x04, 0xEB }; 
-const char* topic_sensor_1     = "Heizung/Holz/Sensor1";
-
-DeviceAddress temp_sensor_2    = { 0x28, 0x61, 0x64, 0x0A, 0xFD, 0x7D, 0x61, 0x66 }; 
-const char* topic_sensor_2     = "Heizung/Holz/Sensor2";
-
-DeviceAddress temp_sensor_3    = { 0x28, 0x61, 0x64, 0x0A, 0xF0, 0x1D, 0xFA, 0x1D }; 
-const char* topic_sensor_3     = "Heizung/Holz/Sensor3";
-
+//DeviceAddress temp_sensor_1         = { 0x28, 0x50, 0x3A, 0x7C, 0x1E, 0x13, 0x01, 0xEA }; 
 
 //************************************************************************** Funktionsprototypen
 void loop                       ();
@@ -73,7 +56,6 @@ void setup                      ();
 void reconnect                  ();
 void callback(char* topic, byte* payload, unsigned int length);
 void mqtt_reconnect_intervall   ();
-void temp_messen                ();
 
 
 //************************************************************************** Intervalle
@@ -88,10 +70,6 @@ unsigned long interval_BEISPIEL = 800;
 */
 unsigned long previousMillis_mqtt_reconnect = 0; // 
 unsigned long interval_mqtt_reconnect = 200; 
-
-
-unsigned long previousMillis_temp_messen = 0; // Temperatur messen aufrufen
-unsigned long interval_temp_messen = 10000; 
 
 //************************************************************************** SETUP
 void setup() {
@@ -157,59 +135,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
 */
 
 }
-
-
-
-//************************************************************************** Temperatur auslesen
-void temp_messen() {
-
-sensors.requestTemperatures();
-
-////////////////////////////////////////////////////////// Sensor 1
-  int currentTemp1 = sensors.getTempC(temp_sensor_1);
-  dtostrf(currentTemp1, 4, 2, stgFromFloat);
- Serial.println(currentTemp1);
-   if ((currentTemp1 == -127)||(currentTemp1 == 85))  { 
-     } 
-    else 
-        {   
-  sprintf(msgToPublish, "%s", stgFromFloat);
-  sprintf(textTOtopic, "%s", topic_sensor_1);
-  client.publish(textTOtopic, msgToPublish);
- }
-
-
- ////////////////////////////////////////////////////////// Sensor 2
-  int currentTemp2 = sensors.getTempC(temp_sensor_2);
-  dtostrf(currentTemp2, 4, 2, stgFromFloat);
- Serial.println(currentTemp2);
-   if ((currentTemp2 == -127)||(currentTemp2 == 85))  { 
-     } 
-    else 
-        {   
-  sprintf(msgToPublish, "%s", stgFromFloat);
-  sprintf(textTOtopic, "%s", topic_sensor_2);
-  client.publish(textTOtopic, msgToPublish);
- }
-
-
- ////////////////////////////////////////////////////////// Sensor 3
-  int currentTemp3 = sensors.getTempC(temp_sensor_3);
-  dtostrf(currentTemp3, 4, 2, stgFromFloat);
- Serial.println(currentTemp1);
-   if ((currentTemp3 == -127)||(currentTemp3 == 85))  { 
-     } 
-    else 
-        {   
-  sprintf(msgToPublish, "%s", stgFromFloat);
-  sprintf(textTOtopic, "%s", topic_sensor_3);
-  client.publish(textTOtopic, msgToPublish);
- }
-
-
-}
-
-
 //************************************************************************** mqtt_reconnect_intervall 
 void mqtt_reconnect_intervall() {
     if (!client.connected()) {
@@ -228,13 +153,7 @@ void loop() {
       mqtt_reconnect_intervall();
     }  
 
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Temperatur messen
-  if (millis() - previousMillis_temp_messen > interval_temp_messen) {
-      previousMillis_temp_messen= millis(); 
-      // Prüfen der Panelenspannung
-      //Serial.println("Temperatur messen");
-      temp_messen();
-    }
+
 
 
 
