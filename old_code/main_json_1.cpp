@@ -21,6 +21,7 @@
  */
 
 #include <Ethernet.h>
+#include <ArduinoJson.h>
 #include <PubSubClient.h> // mqtt
 #include <SPI.h> // Seriell
 //#include <Wire.h>
@@ -48,6 +49,12 @@ char textTOtopic[60];
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
+//************************************************************************** Json
+constexpr uint8_t JSON_MEMORY {150};
+//StaticJsonDocument<JSON_MEMORY> doc;
+char JSONmessageBuffer[JSON_MEMORY];
+
+
 
 //************************************************************************** Temp. Sensor ds18b20 HEX zuweisen
 /*
@@ -58,13 +65,13 @@ ge  4,7 kOhm gegen rt (Pin 2 Uno)
 
 */
 DeviceAddress temp_sensor_1    = { 0x28, 0x61, 0x64, 0x0A, 0xFD, 0x69, 0x04, 0xEB }; 
-const char* topic_sensor_1     = "Heizung/Holz/Vorlauf_Fussboden";
+
 
 DeviceAddress temp_sensor_2    = { 0x28, 0x61, 0x64, 0x0A, 0xFD, 0x7D, 0x61, 0x66 }; 
-const char* topic_sensor_2     = "Heizung/Holz/Ruecklauf_Fussboden";
+
 
 DeviceAddress temp_sensor_3    = { 0x28, 0x61, 0x64, 0x0A, 0xF0, 0x1D, 0xFA, 0x1D }; 
-const char* topic_sensor_3     = "Heizung/Holz/Heizkessel";
+
 
 
 //************************************************************************** Funktionsprototypen
@@ -106,14 +113,13 @@ void setup() {
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
-
-}
+  }
 
 //************************************************************************** mqtt - reconnect
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Verbindung zum MQTT-Server aufbauen...");
-    if (client.connect("Temp_Holzheizung_1", "hitesh", "RO9UZ7wANCXzmy")) {
+    if (client.connect("GIMA", "hitesh", "RO9UZ7wANCXzmy")) {
       Serial.println("verbunden");
       //client.subscribe("Werktor/K7");
     } else {
@@ -165,6 +171,61 @@ void temp_messen() {
 
 sensors.requestTemperatures();
 
+StaticJsonDocument<50> doc;
+String meinJson;
+
+meinJson = "";
+
+    doc["ledRot"] = false;
+    doc["ledGruen"] = true;
+    doc["poti"] = "100";
+    serializeJson(doc, meinJson);
+    Serial.println(meinJson);
+
+
+
+/*
+  // Allocate the JSON document
+  JsonDocument doc;
+
+
+// Add values in the document
+  doc["sensor"] = "Heizung Sensor 1";
+  doc["time"] = 1351824120;
+
+// Add an array
+  JsonArray data = doc["data"].to<JsonArray>();
+  data.add(48.756080);
+  data.add(2.302038);  
+
+  JsonObject statement = doc.to<JsonObject>();
+  statement["id"] = "sensor1";
+  statement["src"] = "Temp";
+  statement["method"] = "messen";
+  JsonObject params = statement.createNestedObject("params");
+  params["id"] = 0;
+  params["on"] = true;
+  params["toggle_after"] = 5;
+
+  serializeJson(doc, Serial);
+  serializeJsonPretty(doc, Serial);
+  //Serial.println();
+  //Serial.println("Sending message to MQTT topic..");
+  Serial.println(JSONmessageBuffer);
+*/
+ //client.publish("Heizung/Hackschnitzelheizung/Sensor1/", JSONmessageBuffer);
+
+
+/*
+  if (client.publish("Bootsschuppen/Pumpe1/rpc", JSONmessageBuffer) == true) {
+    Serial.println("Success sending message");
+  } else {
+    //Serial.println("Error sending message");
+  }
+*/
+
+
+/*
 ////////////////////////////////////////////////////////// Sensor 1
   int currentTemp1 = sensors.getTempC(temp_sensor_1);
   dtostrf(currentTemp1, 4, 2, stgFromFloat);
@@ -173,8 +234,9 @@ sensors.requestTemperatures();
      } 
     else 
         {   
+          
   sprintf(msgToPublish, "%s", stgFromFloat);
-  sprintf(textTOtopic, "%s", topic_sensor_1);
+  sprintf(textTOtopic, "%s", "Heizung/1");
   client.publish(textTOtopic, msgToPublish);
  }
 
@@ -188,7 +250,7 @@ sensors.requestTemperatures();
     else 
         {   
   sprintf(msgToPublish, "%s", stgFromFloat);
-  sprintf(textTOtopic, "%s", topic_sensor_2);
+  sprintf(textTOtopic, "%s", "Heizung/2");
   client.publish(textTOtopic, msgToPublish);
  }
 
@@ -202,11 +264,11 @@ sensors.requestTemperatures();
     else 
         {   
   sprintf(msgToPublish, "%s", stgFromFloat);
-  sprintf(textTOtopic, "%s", topic_sensor_3);
+  sprintf(textTOtopic, "%s", "Heizung/3");
   client.publish(textTOtopic, msgToPublish);
  }
 
-
+*/
 }
 
 
@@ -231,8 +293,6 @@ void loop() {
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Temperatur messen
   if (millis() - previousMillis_temp_messen > interval_temp_messen) {
       previousMillis_temp_messen= millis(); 
-      // Prüfen der Panelenspannung
-      //Serial.println("Temperatur messen");
       temp_messen();
     }
 

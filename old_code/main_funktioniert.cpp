@@ -58,13 +58,13 @@ ge  4,7 kOhm gegen rt (Pin 2 Uno)
 
 */
 DeviceAddress temp_sensor_1    = { 0x28, 0x61, 0x64, 0x0A, 0xFD, 0x69, 0x04, 0xEB }; 
-const char* topic_sensor_1     = "Heizung/Holz/Vorlauf_Fussboden";
+const char* topic_sensor_1     = "Heizung/Holz/Sensor1";
 
 DeviceAddress temp_sensor_2    = { 0x28, 0x61, 0x64, 0x0A, 0xFD, 0x7D, 0x61, 0x66 }; 
-const char* topic_sensor_2     = "Heizung/Holz/Ruecklauf_Fussboden";
+const char* topic_sensor_2     = "Heizung/Holz/Sensor2";
 
 DeviceAddress temp_sensor_3    = { 0x28, 0x61, 0x64, 0x0A, 0xF0, 0x1D, 0xFA, 0x1D }; 
-const char* topic_sensor_3     = "Heizung/Holz/Heizkessel";
+const char* topic_sensor_3     = "Heizung/Holz/Sensor3";
 
 
 //************************************************************************** Funktionsprototypen
@@ -113,7 +113,7 @@ void setup() {
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Verbindung zum MQTT-Server aufbauen...");
-    if (client.connect("Temp_Holzheizung_1", "hitesh", "RO9UZ7wANCXzmy")) {
+    if (client.connect("GIMA", "hitesh", "RO9UZ7wANCXzmy")) {
       Serial.println("verbunden");
       //client.subscribe("Werktor/K7");
     } else {
