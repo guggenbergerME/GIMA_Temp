@@ -83,11 +83,9 @@ void temp_messen                ();
 void(* resetFunc) (void) = 0;
 
 
-//************************************************************************** Intervalle
-/* Beispiel
-unsigned long previousMillis_BEISPIEL = 0; // 
-unsigned long interval_BEISPIEL = 800; 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ BEISPIEL
+//************************************************************************** Inter
+
+EL
   if (millis() - previousMillis_BEISPIEL > interval_BEISPIEL) {
       previousMillis_BEISPIEL = millis(); 
       FUNKTION();
