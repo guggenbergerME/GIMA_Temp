@@ -56,6 +56,12 @@ rt  + 5V
 sw  GND
 ge  4,7 kOhm gegen rt (Pin 2 Uno)
 
+Steckerbelegung Sensoren
+************************
+L     + 5V  (braun)
+N     GND   (blau)
+GrGe  Datenleitung  (grge)
+
 */
 DeviceAddress temp_sensor_1    = { 0x28, 0x61, 0x64, 0x0A, 0xFD, 0x69, 0x04, 0xEB }; 
 const char* topic_sensor_1     = "Heizung/Holz/Vorlauf_Fussboden";
@@ -74,6 +80,7 @@ void reconnect                  ();
 void callback(char* topic, byte* payload, unsigned int length);
 void mqtt_reconnect_intervall   ();
 void temp_messen                ();
+void(* resetFunc) (void) = 0;
 
 
 //************************************************************************** Intervalle
@@ -91,7 +98,7 @@ unsigned long interval_mqtt_reconnect = 200;
 
 
 unsigned long previousMillis_temp_messen = 0; // Temperatur messen aufrufen
-unsigned long interval_temp_messen = 5000; 
+unsigned long interval_temp_messen = 10000; 
 
 //************************************************************************** SETUP
 void setup() {
@@ -236,6 +243,9 @@ void loop() {
       temp_messen();
     }
 
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Arduino Reset
+if ( millis()  >= 600000) resetFunc(); // Reset alle 10 Min
 
 
 }
