@@ -64,13 +64,13 @@ GrGe  Datenleitung  (grge)
 
 */
 DeviceAddress temp_sensor_1    = { 0x28, 0x61, 0x64, 0x0A, 0xFD, 0x69, 0x04, 0xEB }; 
-const char* topic_sensor_1     = "Heizung/Holz/Vorlauf_Fussboden";
+const char* topic_sensor_1     = "Heizung/Holz/Vorlauf_1";
 
 DeviceAddress temp_sensor_2    = { 0x28, 0x61, 0x64, 0x0A, 0xFD, 0x7D, 0x61, 0x66 }; 
-const char* topic_sensor_2     = "Heizung/Holz/Ruecklauf_Fussboden";
+const char* topic_sensor_2     = "Heizung/Holz/Ruecklauf_1";
 
 DeviceAddress temp_sensor_3    = { 0x28, 0x61, 0x64, 0x0A, 0xF0, 0x1D, 0xFA, 0x1D }; 
-const char* topic_sensor_3     = "Heizung/Holz/Heizkessel";
+const char* topic_sensor_3     = "Heizung/Holz/Raumtemp";
 
 
 //************************************************************************** Funktionsprototypen
