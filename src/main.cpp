@@ -85,12 +85,6 @@ void(* resetFunc) (void) = 0;
 
 //************************************************************************** Inter
 
-EL
-  if (millis() - previousMillis_BEISPIEL > interval_BEISPIEL) {
-      previousMillis_BEISPIEL = millis(); 
-      FUNKTION();
-    }  
-*/
 unsigned long previousMillis_mqtt_reconnect = 0; // 
 unsigned long interval_mqtt_reconnect = 200; 
 
